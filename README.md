@@ -25,6 +25,24 @@ pip install AaioAPI
 To get started, you need to register and get all the necessary store data [via this link on the official AAIO website](https://aaio.io/cabinet/merchants/)     
 Чтобы начать работу, вам необходимо зарегистрироваться и получить все необходимые данные магазина [по этой ссылке на оф.сайте AAIO](https://aaio.io/cabinet/merchants/)
 
+### Get balance - Получение баланса
+Чтобы получить доступ к балансу, скопируйте ваш [API Ключ](https://aaio.io/cabinet/api/)
+``` python
+import AaioAPI
+
+client = 'your_api_key'
+balance = AaioAPI.get_balance(client)
+balance = balance['balance']
+# balance = {
+#     "type": "success",
+#     "balance": 50.43, // Текущий доступный баланс
+#     "referral": 0, // Текущий реферальный баланс
+#     "hold": 1.57 // Текущий замороженный баланс
+#  }
+
+print(balance)
+```
+
 ### Example of creating an invoice and receiving a payment link - Пример создания счета и получения ссылки на оплату
 Здесь вам понадобятся данные вашего магазина
 ``` python

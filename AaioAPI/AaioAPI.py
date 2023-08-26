@@ -1,5 +1,6 @@
-import hashlib, random, requests
+import hashlib, random, requests, sys
 from urllib.parse import urlencode
+from requests.exceptions import ConnectTimeout, ReadTimeout
 
 
 class Aaio:
@@ -15,6 +16,38 @@ class Aaio:
 
     def is_success(self):
         return self.status == "success"
+
+
+def get_balance(api_key):
+    url = 'https://aaio.io/api/balance'
+
+    headers = {
+        'Accept': 'application/json',
+        'X-Api-Key': api_key
+    }
+
+    try:
+        response = requests.post(url, headers=headers, timeout=(15, 60))
+    except ConnectTimeout:
+        print('ConnectTimeout') # Не хватило времени на подключение к сайту
+        sys.exit()
+    except ReadTimeout:
+        print('ReadTimeout') # Не хватило времени на выполнение запроса
+        sys.exit()
+
+    if(response.status_code in [200, 400, 401]):
+        try:
+            response_json = response.json() # Парсинг результата
+        except:
+            print('Не удалось пропарсить ответ')
+            sys.exit()
+
+        if(response_json['type'] == 'success'):
+            return response_json
+        else:
+            print('Ошибка: ' + response_json['message']) # Вывод ошибки
+    else:
+        print('Response code: ' + str(response.status_code)) # Вывод неизвестного кода ответа
 
 
 def pay(merchant_id_aaio, amount_aaio, currency_aaio, secret_aaio, desc_aaio):

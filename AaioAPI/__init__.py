@@ -1,1 +1,1 @@
-from .AaioAPI import Aaio, pay, check_payment
+from .AaioAPI import Aaio, pay, check_payment, get_balance
