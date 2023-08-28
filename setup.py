@@ -6,7 +6,7 @@ def readme():
 
 setup(
   name='AaioAPI',
-  version='1.0.1',
+  version='1.0.2',
   author='Fre4ka',
   author_email='yusufbek0303@gmail.com',
   description='The best, convenient and simple library for connecting Aaio payment',
@@ -22,7 +22,8 @@ setup(
   ],
   keywords='aaio api python payments aaio-api aaioapi',
   project_urls={
-    'Homepage': 'https://github.com/wkillus/AaioAPI'
+    'Homepage': 'https://github.com/wkillus/AaioAPI',
+    'Documentation': 'https://docs.aaio-api.site/'
   },
   python_requires='>=3.7'
 )

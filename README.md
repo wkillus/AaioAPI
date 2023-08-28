@@ -6,8 +6,9 @@ A Library for easy work with [Aaio API](https://wiki.aaio.io/), in the Python pr
 
  ## What is available in this library? - Что имеется в данной библиотеке?
 
-- Creating a bill for payment - Создания счета для оплаты
+- Creating a bill for payment - Создание счета для оплаты
 - Quick check of payment status - Быстрая проверка статуса оплаты
+- Get balance - Получение баланса
 - The largest number of payment methods - Наибольшее количество способов оплаты
 
 
