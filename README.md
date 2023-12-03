@@ -56,9 +56,9 @@ amount = 25 # Сумма к оплате
 currency = 'RUB' # Валюта заказа
 desc = 'Test payment.' # Описание заказа
 
-url_aaio = client.create_payment(amount, currency, desc)
+URL = client.create_payment(amount, currency, desc)
 
-print(url_aaio) # Ссылка на оплату
+print(URL) # Ссылка на оплату
 ```
 
 ### Example of a status check - Пример проверки статуса
@@ -66,10 +66,10 @@ print(url_aaio) # Ссылка на оплату
 ```python
 while True:
 
-    if client.is_expired():                # Если счет просрочен
+    if client.is_expired(URL):                # Если счет просрочен
         print("Invoice was expired")
         break
-    elif client.is_success():              # Если оплата прошла успешно
+    elif client.is_success(URL):              # Если оплата прошла успешно
         print("Payment was succesful")
         break
     else:                                   # Или если счет ожидает оплаты
@@ -91,16 +91,16 @@ amount = 25 # Сумма к оплате
 currency = 'RUB' # Валюта заказа
 desc = 'Test payment.' # Описание заказа
 
-url_aaio = client.create_payment(amount, currency, desc)
+URL = client.create_payment(amount, currency, desc)
 
-print(url_aaio) # Ссылка на оплату
+print(URL) # Ссылка на оплату
 
 while True:
 
-    if client.is_expired():                # Если счет просрочен
+    if client.is_expired(URL):                # Если счет просрочен
         print("Invoice was expired")
         break
-    elif client.is_success():              # Если оплата прошла успешно
+    elif client.is_success(URL):              # Если оплата прошла успешно
         print("Payment was succesful")
         break
     else:                                   # Или если счет ожидает оплаты
