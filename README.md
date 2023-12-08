@@ -8,6 +8,7 @@ A Library for easy work with [Aaio API](https://wiki.aaio.io/), in the Python pr
 
 - Creating a bill for payment - Создание счета для оплаты
 - Quick check of payment status - Быстрая проверка статуса оплаты
+- Asynchronous / synchronous version - Асинхронная / синхронная версия
 - Get balance - Получение баланса
 - The largest number of payment methods - Наибольшее количество способов оплаты
 
@@ -28,6 +29,8 @@ To get started, you need to register and get all the necessary store data [via t
 
 ### Get balance - Получение баланса
 Чтобы получить доступ к балансу, скопируйте ваш [API Ключ](https://aaio.io/cabinet/api/)
+
+Использование в синхронной версии:
 ``` python
 from AaioAPI import AaioAPI
 
@@ -44,8 +47,32 @@ balance = balance['balance']
 print(balance)
 ```
 
+Использование в асинхронной версии:
+```python
+from AaioAPI import AsyncAaioAPI
+import asyncio
+
+async def main():
+    client = AsyncAaioAPI('API KEY')
+    balance = await client.get_balance()
+    balance = balance['balance']
+    # balance = {
+    #     "type": "success",
+    #     "balance": 50.43, // Текущий доступный баланс
+    #     "referral": 0, // Текущий реферальный баланс
+    #     "hold": 1.57 // Текущий замороженный баланс
+    #  }
+
+    print(balance)
+
+
+asyncio.run(main())
+```
+
 ### Example of creating an invoice and receiving a payment link - Пример создания счета и получения ссылки на оплату
-Здесь вам понадобятся данные вашего магазина
+Здесь вам понадобятся [данные вашего магазина](https://aaio.io/cabinet/merchants/)
+
+Использование в синхронной версии:
 ``` python
 from AaioAPI import AaioAPI
 import time
@@ -61,8 +88,30 @@ URL = client.create_payment(amount, currency, desc)
 print(URL) # Ссылка на оплату
 ```
 
+Использование в aсинхронной версии:
+``` python
+from AaioAPI import AsyncAaioAPI
+import asyncio
+
+async def main():
+    client = AsyncAaioAPI('API KEY', 'SECRET №1', 'MERCHANT ID')
+
+    amount = 25 # Сумма к оплате
+    currency = 'RUB' # Валюта заказа
+    desc = 'Test payment.' # Описание заказа
+
+    URL = await client.create_payment(amount, currency, desc)
+
+    print(URL) # Ссылка на оплату
+
+
+asyncio.run(main())
+```
+
 ### Example of a status check - Пример проверки статуса
 Проверяем статус платежа каждые 5 секунд с помощью цикла
+
+Использование в синхронной версии:
 ```python
 while True:
 
@@ -77,10 +126,24 @@ while True:
     time.sleep(5)
 ```
 
+Использование в асинхронной версии:
+```python
+while True:
 
+    if await client.is_expired(URL):                # Если счет просрочен
+        print("Invoice was expired")
+        break
+    elif await client.is_success(URL):              # Если оплата прошла успешно
+        print("Payment was succesful")
+        break
+    else:                                   # Или если счет ожидает оплаты
+        print("Invoice wasn't paid. Please pay the bill")
+    await asyncio.sleep(5)
+```
 
                                                                  
 ### Full Code - Полный код
+Синхронная версия:
 ```python
 from AaioAPI import AaioAPI
 import time
@@ -106,6 +169,38 @@ while True:
     else:                                   # Или если счет ожидает оплаты
         print("Invoice wasn't paid. Please pay the bill")
     time.sleep(5)
+```
+
+Асинхронная версия:
+```python
+from AaioAPI import AsyncAaioAPI
+import asyncio
+
+async def main():
+    client = AsyncAaioAPI('API KEY', 'SECRET №1', 'MERCHANT ID')
+
+    amount = 25 # Сумма к оплате
+    currency = 'RUB' # Валюта заказа
+    desc = 'Test payment.' # Описание заказа
+
+    URL = await client.create_payment(amount, currency, desc)
+
+    print(URL) # Ссылка на оплату
+
+    while True:
+
+        if await client.is_expired(URL):                # Если счет просрочен
+            print("Invoice was expired")
+            break
+        elif await client.is_success(URL):              # Если оплата прошла успешно
+            print("Payment was succesful")
+            break
+        else:                                   # Или если счет ожидает оплаты
+            print("Invoice wasn't paid. Please pay the bill")
+        await asyncio.sleep(5)
+
+
+asyncio.run(main())
 ```
 
 ## License
