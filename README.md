@@ -10,7 +10,7 @@ A Library for easy work with [Aaio API](https://wiki.aaio.io/), in the Python pr
 - Quick check of payment status - Быстрая проверка статуса оплаты
 - Asynchronous / synchronous version - Асинхронная / синхронная версия
 - Get balance - Получение баланса
-- The largest number of payment methods - Наибольшее количество способов оплаты
+- Get payment info - Получение информации о платежах
 
 
 ## Installation - Установка
@@ -31,10 +31,10 @@ To get started, you need to register and get all the necessary store data [via t
 Чтобы получить доступ к балансу, скопируйте ваш [API Ключ](https://aaio.io/cabinet/api/)
 
 Использование в синхронной версии:
-``` python
+```python
 from AaioAPI import AaioAPI
 
-client = AaioAPI('API KEY')
+client = AaioAPI('API KEY', 'SECRET №1', 'MERCHANT ID')
 balance = client.get_balance()
 balance = balance['balance']
 # balance = {
@@ -53,7 +53,7 @@ from AaioAPI import AsyncAaioAPI
 import asyncio
 
 async def main():
-    client = AsyncAaioAPI('API KEY')
+    client = AsyncAaioAPI('API KEY', 'SECRET №1', 'MERCHANT ID')
     balance = await client.get_balance()
     balance = balance['balance']
     # balance = {
@@ -69,38 +69,72 @@ async def main():
 asyncio.run(main())
 ```
 
+### Get payment info - Получение информации о платеже
+Здесь пример получения информации о платеже
+
+Использование в синхронной версии:
+```python
+from AaioAPI import AaioAPI
+
+client = AsyncAaioAPI('API KEY', 'SECRET №1', 'MERCHANT ID')
+order_id = 'my_id123' # Номер заказа
+payment_info = client.get_payment_info(order_id)
+
+print(payment_info)
+```
+
+Использование в синхронной версии:
+```python
+from AaioAPI import AsyncAaioAPI
+import asyncio
+
+async def main():
+    client = AsyncAaioAPI('API KEY', 'SECRET №1', 'MERCHANT ID')
+    order_id = 'my_id123' # Номер заказа
+    payment_info = await client.get_payment_info(order_id)
+
+    print(payment_info)
+
+
+asyncio.run(main())
+```
+
 ### Example of creating an invoice and receiving a payment link - Пример создания счета и получения ссылки на оплату
 Здесь вам понадобятся [данные вашего магазина](https://aaio.io/cabinet/merchants/)
 
 Использование в синхронной версии:
-``` python
+```python
 from AaioAPI import AaioAPI
 import time
 
 client = AaioAPI('API KEY', 'SECRET №1', 'MERCHANT ID')
 
+order_id = 'my_id123' # Номер заказа
 amount = 25 # Сумма к оплате
+lang = 'ru' # Язык страницы
 currency = 'RUB' # Валюта заказа
 desc = 'Test payment.' # Описание заказа
 
-URL = client.create_payment(amount, currency, desc)
+URL = client.create_payment(order_id, amount, lang, currency, desc)
 
 print(URL) # Ссылка на оплату
 ```
 
 Использование в aсинхронной версии:
-``` python
+```python
 from AaioAPI import AsyncAaioAPI
 import asyncio
 
 async def main():
     client = AsyncAaioAPI('API KEY', 'SECRET №1', 'MERCHANT ID')
 
+    order_id = 'my_id123' # Номер заказа
     amount = 25 # Сумма к оплате
+    lang = 'ru' # Язык страницы
     currency = 'RUB' # Валюта заказа
     desc = 'Test payment.' # Описание заказа
 
-    URL = await client.create_payment(amount, currency, desc)
+    URL = await client.create_payment(order_id, amount, lang, currency, desc)
 
     print(URL) # Ссылка на оплату
 
@@ -115,10 +149,10 @@ asyncio.run(main())
 ```python
 while True:
 
-    if client.is_expired(URL):                # Если счет просрочен
+    if client.is_expired(order_id):                # Если счет просрочен
         print("Invoice was expired")
         break
-    elif client.is_success(URL):              # Если оплата прошла успешно
+    elif client.is_success(order_id):              # Если оплата прошла успешно
         print("Payment was succesful")
         break
     else:                                   # Или если счет ожидает оплаты
@@ -130,10 +164,10 @@ while True:
 ```python
 while True:
 
-    if await client.is_expired(URL):                # Если счет просрочен
+    if await client.is_expired(order_id):                # Если счет просрочен
         print("Invoice was expired")
         break
-    elif await client.is_success(URL):              # Если оплата прошла успешно
+    elif await client.is_success(order_id):              # Если оплата прошла успешно
         print("Payment was succesful")
         break
     else:                                   # Или если счет ожидает оплаты
@@ -141,7 +175,7 @@ while True:
     await asyncio.sleep(5)
 ```
 
-                                                                 
+
 ### Full Code - Полный код
 Синхронная версия:
 ```python
@@ -150,20 +184,23 @@ import time
 
 client = AaioAPI('API KEY', 'SECRET №1', 'MERCHANT ID')
 
+order_id = 'my_id123' # Номер заказа
 amount = 25 # Сумма к оплате
+lang = 'ru' # Язык страницы
 currency = 'RUB' # Валюта заказа
 desc = 'Test payment.' # Описание заказа
 
-URL = client.create_payment(amount, currency, desc)
+URL = client.create_payment(order_id, amount, lang, currency, desc)
 
 print(URL) # Ссылка на оплату
 
+
 while True:
 
-    if client.is_expired(URL):                # Если счет просрочен
+    if client.is_expired(order_id):                # Если счет просрочен
         print("Invoice was expired")
         break
-    elif client.is_success(URL):              # Если оплата прошла успешно
+    elif client.is_success(order_id):              # Если оплата прошла успешно
         print("Payment was succesful")
         break
     else:                                   # Или если счет ожидает оплаты
@@ -176,23 +213,27 @@ while True:
 from AaioAPI import AsyncAaioAPI
 import asyncio
 
+
 async def main():
     client = AsyncAaioAPI('API KEY', 'SECRET №1', 'MERCHANT ID')
 
+    order_id = 'my_id123' # Номер заказа
     amount = 25 # Сумма к оплате
+    lang = 'ru' # Язык страницы
     currency = 'RUB' # Валюта заказа
     desc = 'Test payment.' # Описание заказа
 
-    URL = await client.create_payment(amount, currency, desc)
+    URL = await client.create_payment(order_id, amount, lang, currency, desc)
 
     print(URL) # Ссылка на оплату
 
+
     while True:
 
-        if await client.is_expired(URL):                # Если счет просрочен
+        if await client.is_expired(order_id):                # Если счет просрочен
             print("Invoice was expired")
             break
-        elif await client.is_success(URL):              # Если оплата прошла успешно
+        elif await client.is_success(order_id):              # Если оплата прошла успешно
             print("Payment was succesful")
             break
         else:                                   # Или если счет ожидает оплаты

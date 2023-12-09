@@ -1,13 +1,12 @@
-import hashlib, random
+import hashlib
 from urllib.parse import urlencode
 from requests.exceptions import ConnectTimeout, ReadTimeout
 
-from bs4 import BeautifulSoup
 import aiohttp
 
 
 class AsyncAaioAPI:
-    def __init__(self, API_KEY, SECRET_KEY=None, MERCHANT_ID=None):
+    def __init__(self, API_KEY, SECRET_KEY, MERCHANT_ID):
         self.API_KEY = API_KEY
         self.SECRET_KEY = SECRET_KEY
         self.MERCHANT_ID = MERCHANT_ID
@@ -16,7 +15,7 @@ class AsyncAaioAPI:
     async def get_balance(self):
         """Get Balance"""
 
-        url = 'https://aaio.io/api/balance'
+        URL = 'https://aaio.io/api/balance'
 
         headers = {
             'Accept': 'application/json',
@@ -27,7 +26,7 @@ class AsyncAaioAPI:
         try:
             async with aiohttp.ClientSession(headers=headers) as session:
 
-                async with session.post(url) as response:
+                async with session.post(URL) as response:
                     
                     if(response.status in [200, 400, 401]):
                         try:
@@ -49,44 +48,28 @@ class AsyncAaioAPI:
             return 'ReadTimeout' # Не хватило времени на выполнение запроса
 
 
-    async def create_payment(self, amount=20, currency='RUB', description=None):
+    async def create_payment(self, order_id, amount, lang='ru', currency='RUB', description=None):
         """Creating of payment"""
 
-        rand = "1234567890"
-        number = ''
-        for i in range(10):
-            number = number + random.choice(list(rand))
-
         merchant_id = self.MERCHANT_ID # merchant id
-
-        amount_aaio = amount # amount
-
-        currency_aaio = currency # currency
-
         secret = self.SECRET_KEY # secret key №1 from shop settings
-
-        order_id = number # order id
-
-        desc = description # order description
-
-        lang = 'ru' # lang of form
 
 
         sign = f':'.join([
             str(merchant_id),
-            str(amount_aaio),
-            str(currency_aaio),
+            str(amount),
+            str(currency),
             str(secret),
             str(order_id)
         ])
 
         params = {
             'merchant_id': merchant_id,
-            'amount': amount_aaio,
-            'currency': currency_aaio,
+            'amount': amount,
+            'currency': currency,
             'order_id': order_id,
             'sign': hashlib.sha256(sign.encode('utf-8')).hexdigest(),
-            'desc': desc,
+            'desc': description,
             'lang': lang
         }
 
@@ -94,35 +77,72 @@ class AsyncAaioAPI:
 
 
         return url_aaio
+    
+
+    async def get_payment_info(self, order_id):
+        """Get payment info"""
+
+        URL = 'https://aaio.io/api/info-pay'
+
+        params = {
+            'merchant_id': self.MERCHANT_ID,
+            'order_id': order_id
+        }
+
+        headers = {
+            'Accept': 'application/json',
+            'X-Api-Key': self.API_KEY
+
+        }
+
+        async with aiohttp.ClientSession(headers=headers) as session:
+            async with session.post(URL, data=params) as response:
+                response_json = await response.json()
+
+                return response_json
 
         
-    async def is_expired(self, url: str):
+    async def is_expired(self, order_id):
         """Check status payment (expired)"""
 
-        async with aiohttp.ClientSession() as session:
+        URL = 'https://aaio.io/api/info-pay'
 
-            async with session.get(url) as response:
+        params = {
+            'merchant_id': self.MERCHANT_ID,
+            'order_id': order_id
+        }
 
-                soup = BeautifulSoup(await response.text(), 'lxml')
-                results = soup.findAll('span', class_='mb-2')
+        headers = {
+            'Accept': 'application/json',
+            'X-Api-Key': self.API_KEY
 
-                if '<span class="mb-2">Заказ просрочен. Оплатить заказ необходимо было' in str(results):
-                    return True
-                else:
-                    return False
-                    
+        }
 
-    async def is_success(self, url: str):
+        async with aiohttp.ClientSession(headers=headers) as session:
+            async with session.post(URL, data=params) as response:
+                response_json = await response.json()
+
+                return response_json['type'] == 'success' and response_json['status'] == 'expired'
+
+
+    async def is_success(self, order_id):
         """Check status payment (success)"""
 
-        async with aiohttp.ClientSession() as session:
+        URL = 'https://aaio.io/api/info-pay'
 
-            async with session.get(url) as response:
+        params = {
+            'merchant_id': self.MERCHANT_ID,
+            'order_id': order_id
+        }
 
-                soup = BeautifulSoup(await response.text(), 'lxml')
-                results = soup.findAll('span', class_='mb-2')
+        headers = {
+            'Accept': 'application/json',
+            'X-Api-Key': self.API_KEY
 
-                if '<span class="mb-2">Заказ успешно был оплачен</span>' in str(results):
-                    return True
-                else:
-                    return False                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+        }
+
+        async with aiohttp.ClientSession(headers=headers) as session:
+            async with session.post(URL, data=params) as response:
+                response_json = await response.json()
+
+                return response_json['type'] == 'success' and response_json['status'] == 'success'

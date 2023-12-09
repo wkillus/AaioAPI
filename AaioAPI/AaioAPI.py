@@ -1,10 +1,10 @@
-import hashlib, random, requests
+import hashlib, requests
 from urllib.parse import urlencode
 from requests.exceptions import ConnectTimeout, ReadTimeout
 
 
 class AaioAPI:
-    def __init__(self, API_KEY, SECRET_KEY=None, MERCHANT_ID=None):
+    def __init__(self, API_KEY, SECRET_KEY, MERCHANT_ID):
         self.API_KEY = API_KEY
         self.SECRET_KEY = SECRET_KEY
         self.MERCHANT_ID = MERCHANT_ID
@@ -13,7 +13,7 @@ class AaioAPI:
     def get_balance(self):
         """Get Balance"""
 
-        url = 'https://aaio.io/api/balance'
+        URL = 'https://aaio.io/api/balance'
 
         headers = {
             'Accept': 'application/json',
@@ -21,7 +21,7 @@ class AaioAPI:
         }
 
         try:
-            response = requests.post(url, headers=headers, timeout=(15, 60))
+            response = requests.post(URL, headers=headers, timeout=(15, 60))
         except ConnectTimeout:
             return 'ConnectTimeout' # Не хватило времени на подключение к сайту
         
@@ -42,44 +42,28 @@ class AaioAPI:
             return 'Response code: ' + str(response.status_code) # Вывод неизвестного кода ответа
 
 
-    def create_payment(self, amount=20, currency='RUB', description=None):
+    def create_payment(self, order_id, amount, lang='ru', currency='RUB', description=None):
         """Creating of payment"""
 
-        rand = "1234567890"
-        number = ''
-        for i in range(10):
-            number = number + random.choice(list(rand))
-
         merchant_id = self.MERCHANT_ID # merchant id
-
-        amount_aaio = amount # amount
-
-        currency_aaio = currency # currency
-
         secret = self.SECRET_KEY # secret key №1 from shop settings
-
-        order_id = number # order id
-
-        desc = description # order description
-
-        lang = 'ru' # lang of form
 
 
         sign = f':'.join([
             str(merchant_id),
-            str(amount_aaio),
-            str(currency_aaio),
+            str(amount),
+            str(currency),
             str(secret),
             str(order_id)
         ])
 
         params = {
             'merchant_id': merchant_id,
-            'amount': amount_aaio,
-            'currency': currency_aaio,
+            'amount': amount,
+            'currency': currency,
             'order_id': order_id,
             'sign': hashlib.sha256(sign.encode('utf-8')).hexdigest(),
-            'desc': desc,
+            'desc': description,
             'lang': lang
         }
 
@@ -89,23 +73,67 @@ class AaioAPI:
         return url_aaio
 
         
-    def is_expired(self, url: str):
+    def get_payment_info(self, order_id):
+        """Get payment info"""
+
+        URL = 'https://aaio.io/api/info-pay'
+
+        params = {
+            'merchant_id': self.MERCHANT_ID,
+            'order_id': order_id
+        }
+
+        headers = {
+            'Accept': 'application/json',
+            'X-Api-Key': self.API_KEY
+
+        }
+
+        response = requests.post(URL, data=params, headers=headers)
+        response_json = response.json()
+
+        return response_json    
+
+
+    def is_expired(self, order_id):
         """Check status payment (expired)"""
 
-        response = requests.get(url)
+        URL = 'https://aaio.io/api/info-pay'
 
-        if '<span class="mb-2">Заказ просрочен. Оплатить заказ необходимо было' in response.content.decode():
-            return True
-        else:
-            return False
-    
+        params = {
+            'merchant_id': self.MERCHANT_ID,
+            'order_id': order_id
+        }
 
-    def is_success(self, url: str):
+        headers = {
+            'Accept': 'application/json',
+            'X-Api-Key': self.API_KEY
+
+        }
+
+        response = requests.post(URL, data=params, headers=headers)
+        response_json = response.json()
+
+        return response_json['type'] == 'success' and response_json['status'] == 'expired'
+
+
+    def is_success(self, order_id):
         """Check status payment (success)"""
 
-        response = requests.get(url)
+        URL = 'https://aaio.io/api/info-pay'
 
-        if '<span class="mb-2">Заказ успешно был оплачен</span>' in response.content.decode():
-            return True
-        else:
-            return False
+        params = {
+            'merchant_id': self.MERCHANT_ID,
+            'order_id': order_id
+        }
+
+        headers = {
+            'Accept': 'application/json',
+            'X-Api-Key': self.API_KEY
+
+        }
+
+        response = requests.post(URL, data=params, headers=headers)
+        response_json = response.json()
+
+        return response_json['type'] == 'success' and response_json['status'] == 'success'
