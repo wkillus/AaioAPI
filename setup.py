@@ -6,7 +6,7 @@ def readme():
 
 setup(
   name='AaioAPI',
-  version='2.5.0',
+  version='2.5.5',
   author='Fre4ka',
   author_email='yusufbek0303@gmail.com',
   description='The best, convenient and simple library for connecting Aaio payment',

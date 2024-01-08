@@ -76,7 +76,7 @@ asyncio.run(main())
 ```python
 from AaioAPI import AaioAPI
 
-client = AsyncAaioAPI('API KEY', 'SECRET №1', 'MERCHANT ID')
+client = AaioAPI('API KEY', 'SECRET №1', 'MERCHANT ID')
 order_id = 'my_id123' # Номер заказа
 payment_info = client.get_payment_info(order_id)
 
@@ -170,7 +170,7 @@ while True:
     elif await client.is_success(order_id):              # Если оплата прошла успешно
         print("Payment was succesful")
         break
-    else:                                   # Или если счет ожидает оплаты
+    else:                                                # Или если счет ожидает оплаты
         print("Invoice wasn't paid. Please pay the bill")
     await asyncio.sleep(5)
 ```
@@ -203,7 +203,7 @@ while True:
     elif client.is_success(order_id):              # Если оплата прошла успешно
         print("Payment was succesful")
         break
-    else:                                   # Или если счет ожидает оплаты
+    else:                                          # Или если счет ожидает оплаты
         print("Invoice wasn't paid. Please pay the bill")
     time.sleep(5)
 ```
@@ -236,7 +236,7 @@ async def main():
         elif await client.is_success(order_id):              # Если оплата прошла успешно
             print("Payment was succesful")
             break
-        else:                                   # Или если счет ожидает оплаты
+        else:                                                # Или если счет ожидает оплаты
             print("Invoice wasn't paid. Please pay the bill")
         await asyncio.sleep(5)
 
