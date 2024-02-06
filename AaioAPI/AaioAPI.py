@@ -9,9 +9,9 @@ class AaioAPI:
         Creates instance of one AAIO merchant API client
 
         Args:
-            merchant_id: Merchant ID from https://aaio.io/cabinet
-            secret: 1st secret key from https://aaio.io/cabinet
-            api_key: API key from https://aaio.io/cabinet/api
+            merchant_id: Merchant ID from https://aaio.so/cabinet
+            secret: 1st secret key from https://aaio.so/cabinet
+            api_key: API key from https://aaio.so/cabinet/api
         """
 
         self.API_KEY = API_KEY
@@ -22,12 +22,12 @@ class AaioAPI:
     def get_balance(self):
         """
         Creates a request for get balances of user
-        See https://wiki.aaio.io/api/poluchenie-balansa
+        See https://wiki.aaio.so/api/poluchenie-balansa
 
         Returns: Model from response JSON
         """
 
-        URL = 'https://aaio.io/api/balance'
+        URL = 'https://aaio.so/api/balance'
 
         headers = {
             'Accept': 'application/json',
@@ -61,7 +61,7 @@ class AaioAPI:
                        currency='RUB', description=None):
         """
         Creates payment URL
-        See https://wiki.aaio.io/priem-platezhei/sozdanie-zakaza for more detailed information
+        See https://wiki.aaio.so/priem-platezhei/sozdanie-zakaza for more detailed information
 
         Args:
             amount: Payment amount
@@ -96,7 +96,7 @@ class AaioAPI:
             'lang': lang
         }
 
-        url_aaio = "https://aaio.io/merchant/pay?" + urlencode(params)
+        url_aaio = "https://aaio.so/merchant/pay?" + urlencode(params)
 
 
         return url_aaio
@@ -105,7 +105,7 @@ class AaioAPI:
     def get_payment_info(self, order_id):
         """
         Creates a request for get payment information
-        See https://wiki.aaio.io/api/informaciya-o-zakaze
+        See https://wiki.aaio.so/api/informaciya-o-zakaze
 
         Args:
             order_id: Your order ID
@@ -114,7 +114,7 @@ class AaioAPI:
 
         """
 
-        URL = 'https://aaio.io/api/info-pay'
+        URL = 'https://aaio.so/api/info-pay'
 
         params = {
             'merchant_id': self.MERCHANT_ID,
