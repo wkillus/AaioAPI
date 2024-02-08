@@ -1,7 +1,7 @@
-<h1><img src="https://aaio.io/assets/landing/img/logo-m.svg" width=30 height=30> AAIO</h1>
+<h1><img src="https://aaio.so/assets/landing/img/logo-m.svg" width=30 height=30> AAIO</h1>
 
-A Library for easy work with [Aaio API](https://wiki.aaio.io/), in the Python programming language.  
-Библиотека для легкой работы с [Aaio API](https://wiki.aaio.io/), на языке программирования Python.
+A Library for easy work with [Aaio API](https://wiki.aaio.so/), in the Python programming language.  
+Библиотека для легкой работы с [Aaio API](https://wiki.aaio.so/), на языке программирования Python.
 
 
  ## What is available in this library? - Что имеется в данной библиотеке?
@@ -24,11 +24,11 @@ pip install AaioAPI
 
 
 ## Using - Использование
-To get started, you need to register and get all the necessary store data [via this link on the official AAIO website](https://aaio.io/cabinet/merchants/)     
-Чтобы начать работу, вам необходимо зарегистрироваться и получить все необходимые данные магазина [по этой ссылке на оф.сайте AAIO](https://aaio.io/cabinet/merchants/)
+To get started, you need to register and get all the necessary store data [via this link on the official AAIO website](https://aaio.so/cabinet/merchants/)     
+Чтобы начать работу, вам необходимо зарегистрироваться и получить все необходимые данные магазина [по этой ссылке на оф.сайте AAIO](https://aaio.so/cabinet/merchants/)
 
 ### Get balance - Получение баланса
-Чтобы получить доступ к балансу, скопируйте ваш [API Ключ](https://aaio.io/cabinet/api/)
+Чтобы получить доступ к балансу, скопируйте ваш [API Ключ](https://aaio.so/cabinet/api/)
 
 Использование в синхронной версии:
 ```python
@@ -100,7 +100,7 @@ asyncio.run(main())
 ```
 
 ### Example of creating an invoice and receiving a payment link - Пример создания счета и получения ссылки на оплату
-Здесь вам понадобятся [данные вашего магазина](https://aaio.io/cabinet/merchants/)
+Здесь вам понадобятся [данные вашего магазина](https://aaio.so/cabinet/merchants/)
 
 Использование в синхронной версии:
 ```python
